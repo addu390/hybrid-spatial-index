@@ -1,0 +1,6 @@
+/.idea
+target/
+/.settings
+/bin
+hybrid-spatial-index.iml
+*.DS_Store
