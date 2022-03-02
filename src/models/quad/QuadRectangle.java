@@ -9,13 +9,13 @@ public class QuadRectangle extends AbstractRectangle {
         this.setH(0.0);
     }
 
-    public QuadRectangle(Double x, Double y, Double w, Double h){
+    public QuadRectangle(Double x, Double y, Double w, Double h) {
         super(x,y,w,h);
-        this.setType("structure");
-        this.setId("testId");
+        this.setType("quad-rectangle");
+        this.setId("ba737af4-51f2-4506-b7a8-cb581efe06aa");
     }
 
-    public QuadRectangle(Double x, Double y, Double w, Double h, String id){
+    public QuadRectangle(Double x, Double y, Double w, Double h, String id) {
         super(x,y,w,h);
         this.setId(id);
     }

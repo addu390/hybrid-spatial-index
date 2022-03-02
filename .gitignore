@@ -4,3 +4,4 @@ target/
 /bin
 hybrid-spatial-index.iml
 *.DS_Store
+out
