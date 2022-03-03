@@ -10,7 +10,7 @@ import java.util.ListIterator;
 
 public class QuadTree {
 
-    protected static final int THIS_QUADTREE = -1;
+    protected static final int QUADTREE = -1;
     protected static final int NE_CHILD = 0;
     protected static final int NW_CHILD = 1;
     protected static final int SW_CHILD = 2;
@@ -91,7 +91,7 @@ public class QuadTree {
         if (children[0] != null) {
             int indexToPlaceObject = getChildIndexRectangleBelongsIn(rectangle);
 
-            if (indexToPlaceObject != QuadTree.THIS_QUADTREE) {
+            if (indexToPlaceObject != QuadTree.QUADTREE) {
                 children[indexToPlaceObject].insert(rectangle);
                 return;
             }
@@ -104,7 +104,7 @@ public class QuadTree {
             int i = 0;
             while (i < rectangles.size()) {
                 int indexToPlaceObject = getChildIndexRectangleBelongsIn(rectangles.get(i));
-                if (indexToPlaceObject != QuadTree.THIS_QUADTREE) {
+                if (indexToPlaceObject != QuadTree.QUADTREE) {
                     children[indexToPlaceObject].insert(rectangles.remove(i));
                 } else {
                     i++;
@@ -118,7 +118,7 @@ public class QuadTree {
         rectangles.addAll(this.rectangles);
 
         int index = getChildIndexRectangleBelongsIn(rectangle);
-        if (index == QuadTree.THIS_QUADTREE || this.children[0] == null) {
+        if (index == QuadTree.QUADTREE || this.children[0] == null) {
             if (this.children[0] != null) {
                 for (int i = 0; i < this.children.length; i++) {
                     if (Geometry.isOverlap(
