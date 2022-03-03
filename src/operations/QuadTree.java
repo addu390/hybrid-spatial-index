@@ -80,7 +80,7 @@ public class QuadTree {
         ListIterator<Rectangle> iterator = search(new ArrayList<Rectangle>(), rectangle).listIterator();
         while (iterator.hasNext()) {
             Rectangle currentRectangle = iterator.next();
-            if (Geometry.rectangleObjectsOverlap(currentRectangle, rectangle)) {
+            if (Geometry.isOverlap(currentRectangle, rectangle)) {
                 returnList.add(currentRectangle);
             }
         }
@@ -121,7 +121,7 @@ public class QuadTree {
         if (index == QuadTree.THIS_QUADTREE || this.children[0] == null) {
             if (this.children[0] != null) {
                 for (int i = 0; i < this.children.length; i++) {
-                    if (Geometry.rectangleObjectsOverlap(
+                    if (Geometry.isOverlap(
                             new BaseRectangle(Double.valueOf(this.children[i].getX()),
                                               Double.valueOf(this.children[i].getY()), Double.valueOf(this.children[i].getW()),
                                               Double.valueOf(this.children[i].getH())), rectangle)) {

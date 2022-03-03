@@ -8,22 +8,22 @@ import util.Geometry;
 import java.util.LinkedList;
 import java.util.List;
 
+import static util.Geometry.getArea;
+
 public class RTree {
 
     private final int maxObjects;
     private final int minObjects;
-    private final int dimension;
     private RNode parent;
 
-    public RTree(int maxObjects, int minObjects, int dimension) {
-        this.dimension = dimension;
+    public RTree(int maxObjects, int minObjects) {
         this.maxObjects = maxObjects;
         this.minObjects = minObjects;
-        parent = buildRoot(true);
+        parent = build(true);
     }
 
     public RTree() {
-        this(50, 2, 2);
+        this(50, 2);
     }
 
     public List<Rectangle> search(Rectangle rectangle) {
@@ -48,13 +48,13 @@ public class RTree {
     private void search(Rectangle rectangle, RNode n, LinkedList<Rectangle> results) {
         if (n.leaf) {
             for (RNode e : n.children) {
-                if (Geometry.rectangleObjectsOverlap(rectangle, e.rectangle)) {
+                if (Geometry.isOverlap(rectangle, e.rectangle)) {
                     results.add(e.rectangle);
                 }
             }
         } else {
             for (RNode c : n.children) {
-                if (Geometry.rectangleObjectsOverlap(rectangle, c.rectangle)) {
+                if (Geometry.isOverlap(rectangle, c.rectangle)) {
                     search(rectangle, c, results);
                 }
             }
@@ -64,7 +64,7 @@ public class RTree {
     private void adjustTree(RNode n, RNode nn) {
         if (n == parent) {
             if (nn != null) {
-                parent = buildRoot(false);
+                parent = build(false);
                 parent.children.add(n);
                 n.parent = parent;
                 parent.children.add(nn);
@@ -110,8 +110,8 @@ public class RTree {
             }
             RNode c = cc.pop();
             RNode preferred;
-            double e0 = getRequiredExpansion(nn[0].rectangle, c);
-            double e1 = getRequiredExpansion(nn[1].rectangle, c);
+            double e0 = getExpansion(nn[0].rectangle, c);
+            double e1 = getExpansion(nn[1].rectangle, c);
             if (e0 < e1) {
                 preferred = nn[0];
             } else if (e0 > e1) {
@@ -143,7 +143,7 @@ public class RTree {
     private RNode[] pickSeeds(LinkedList<RNode> nn) {
         RNode[] bestPair = null;
         double bestSep = 0.0f;
-        for (int i = 0; i < dimension; i++) {
+        for (int i = 0; i < 2; i++) {
             double dimLb = Double.MAX_VALUE, dimMinUb = Double.MAX_VALUE;
             double dimUb = -1.0f * Double.MAX_VALUE, dimMaxLb = -1.0f * Double.MAX_VALUE;
             RNode nMaxLb = null, nMinUb = null;
@@ -209,7 +209,7 @@ public class RTree {
         RNode next = null;
         for (RNode c : n.children) {
             double[] c_dimensions = new double[]{c.rectangle.getW(), c.rectangle.getH()};
-            double inc = getRequiredExpansion(c.rectangle, e);
+            double inc = getExpansion(c.rectangle, e);
             if (inc < minInc) {
                 minInc = inc;
                 next = c;
@@ -229,7 +229,7 @@ public class RTree {
         return chooseLeaf(next, e);
     }
 
-    private double getRequiredExpansion(Rectangle rectangle, RNode e) {
+    private double getExpansion(Rectangle rectangle, RNode e) {
         double[] coordinates = new double[]{rectangle.getX(), rectangle.getY()};
         double[] dimensions = new double[]{rectangle.getW(), rectangle.getH()};
 
@@ -252,13 +252,7 @@ public class RTree {
         return (expanded - area);
     }
 
-    private double getArea(Rectangle rectangle) {
-        double area = 1.0f;
-        area *= (rectangle.getW() * rectangle.getY());
-        return area;
-    }
-
-    private RNode buildRoot(boolean asLeaf) {
+    private RNode build(boolean asLeaf) {
         double coordinate = Math.sqrt(Double.MAX_VALUE);
         double dimension = -2.0f * Math.sqrt(Double.MAX_VALUE);
         Rectangle rectangle = new BaseRectangle(coordinate, coordinate, dimension, dimension);
