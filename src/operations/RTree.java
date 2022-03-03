@@ -1,12 +1,14 @@
 package operations;
 
 import models.RNode;
+import models.quad.BaseRectangle;
 import models.quad.Rectangle;
+import util.Geometry;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class RTree<T> {
+public class RTree {
 
     private final int maxObjects;
     private final int minObjects;
@@ -14,7 +16,6 @@ public class RTree<T> {
     private RNode parent;
 
     public RTree(int maxObjects, int minObjects, int dimension) {
-        assert (minObjects <= (maxObjects / 2));
         this.dimension = dimension;
         this.maxObjects = maxObjects;
         this.minObjects = minObjects;
@@ -25,18 +26,14 @@ public class RTree<T> {
         this(50, 2, 2);
     }
 
-    public List<T> search(Rectangle rectangle) {
-        double[] coordinates = new double[]{rectangle.getX(), rectangle.getY()};
-        double[] dimensions = new double[]{rectangle.getW(), rectangle.getH()};
-        LinkedList<T> results = new LinkedList<T>();
-        search(coordinates, dimensions, parent, results);
+    public List<Rectangle> search(Rectangle rectangle) {
+        LinkedList<Rectangle> results = new LinkedList<>();
+        search(rectangle, parent, results);
         return results;
     }
 
     public void insert(Rectangle rectangle) {
-        double[] coordinates = new double[]{rectangle.getX(), rectangle.getY()};
-        double[] dimensions = new double[]{rectangle.getW(), rectangle.getH()};
-        Entry e = new Entry(coordinates, dimensions, (T) rectangle.getId());
+        RNode e = new RNode(rectangle, true);
         RNode l = chooseLeaf(parent, e);
         l.children.add(e);
         e.parent = l;
@@ -48,17 +45,17 @@ public class RTree<T> {
         }
     }
 
-    private void search(double[] coordinates, double[] dimensions, RNode n, LinkedList<T> results) {
+    private void search(Rectangle rectangle, RNode n, LinkedList<Rectangle> results) {
         if (n.leaf) {
             for (RNode e : n.children) {
-                if (isOverlap(coordinates, dimensions, e.coordinates, e.dimensions)) {
-                    results.add(((Entry) e).entry);
+                if (Geometry.rectangleObjectsOverlap(rectangle, e.rectangle)) {
+                    results.add(e.rectangle);
                 }
             }
         } else {
             for (RNode c : n.children) {
-                if (isOverlap(coordinates, dimensions, c.coordinates, c.dimensions)) {
-                    search(coordinates, dimensions, c, results);
+                if (Geometry.rectangleObjectsOverlap(rectangle, c.rectangle)) {
+                    search(rectangle, c, results);
                 }
             }
         }
@@ -89,8 +86,7 @@ public class RTree<T> {
     }
 
     private RNode[] splitNode(RNode n) {
-        @SuppressWarnings("unchecked")
-        RNode[] nn = new RNode[]{n, new RNode(n.coordinates, n.dimensions, n.leaf)};
+        RNode[] nn = new RNode[]{n, new RNode(n.rectangle, n.leaf)};
         nn[1].parent = n.parent;
         if (nn[1].parent != null) {
             nn[1].parent.children.add(nn[1]);
@@ -114,15 +110,15 @@ public class RTree<T> {
             }
             RNode c = cc.pop();
             RNode preferred;
-            double e0 = getRequiredExpansion(nn[0].coordinates, nn[0].dimensions, c);
-            double e1 = getRequiredExpansion(nn[1].coordinates, nn[1].dimensions, c);
+            double e0 = getRequiredExpansion(nn[0].rectangle, c);
+            double e1 = getRequiredExpansion(nn[1].rectangle, c);
             if (e0 < e1) {
                 preferred = nn[0];
             } else if (e0 > e1) {
                 preferred = nn[1];
             } else {
-                double a0 = getArea(nn[0].dimensions);
-                double a1 = getArea(nn[1].dimensions);
+                double a0 = getArea(nn[0].rectangle);
+                double a1 = getArea(nn[1].rectangle);
                 if (a0 < a1) {
                     preferred = nn[0];
                 } else if (e0 > a1) {
@@ -152,18 +148,20 @@ public class RTree<T> {
             double dimUb = -1.0f * Double.MAX_VALUE, dimMaxLb = -1.0f * Double.MAX_VALUE;
             RNode nMaxLb = null, nMinUb = null;
             for (RNode n : nn) {
-                if (n.coordinates[i] < dimLb) {
-                    dimLb = n.coordinates[i];
+                double[] n_coordinates = new double[]{n.rectangle.getX(), n.rectangle.getY()};
+                double[] n_dimensions = new double[]{n.rectangle.getW(), n.rectangle.getH()};
+                if (n_coordinates[i] < dimLb) {
+                    dimLb = n_coordinates[i];
                 }
-                if (n.dimensions[i] + n.coordinates[i] > dimUb) {
-                    dimUb = n.dimensions[i] + n.coordinates[i];
+                if (n_dimensions[i] + n_coordinates[i] > dimUb) {
+                    dimUb = n_dimensions[i] + n_coordinates[i];
                 }
-                if (n.coordinates[i] > dimMaxLb) {
-                    dimMaxLb = n.coordinates[i];
+                if (n_coordinates[i] > dimMaxLb) {
+                    dimMaxLb = n_coordinates[i];
                     nMaxLb = n;
                 }
-                if (n.dimensions[i] + n.coordinates[i] < dimMinUb) {
-                    dimMinUb = n.dimensions[i] + n.coordinates[i];
+                if (n_dimensions[i] + n_coordinates[i] < dimMinUb) {
+                    dimMinUb = n_dimensions[i] + n_coordinates[i];
                     nMinUb = n;
                 }
             }
@@ -179,43 +177,49 @@ public class RTree<T> {
     }
 
     private void tighten(RNode n) {
-        double[] minCoords = new double[n.coordinates.length];
-        double[] maxDimensions = new double[n.dimensions.length];
-        for (int i = 0; i < minCoords.length; i++) {
-            minCoords[i] = Double.MAX_VALUE;
+        double[] minCoordinates = new double[2];
+        double[] maxDimensions = new double[2];
+        for (int i = 0; i < minCoordinates.length; i++) {
+            minCoordinates[i] = Double.MAX_VALUE;
             maxDimensions[i] = 0.0f;
 
             for (RNode c : n.children) {
                 c.parent = n;
-                if (c.coordinates[i] < minCoords[i]) {
-                    minCoords[i] = c.coordinates[i];
+                double[] c_coordinates = new double[]{c.rectangle.getX(), c.rectangle.getY()};
+                double[] c_dimensions = new double[]{c.rectangle.getW(), c.rectangle.getH()};
+                if (c_coordinates[i] < minCoordinates[i]) {
+                    minCoordinates[i] = c_coordinates[i];
                 }
-                if ((c.coordinates[i] + c.dimensions[i]) > maxDimensions[i]) {
-                    maxDimensions[i] = (c.coordinates[i] + c.dimensions[i]);
+                if ((c_coordinates[i] + c_dimensions[i]) > maxDimensions[i]) {
+                    maxDimensions[i] = (c_coordinates[i] + c_dimensions[i]);
                 }
             }
         }
-        System.arraycopy(minCoords, 0, n.coordinates, 0, minCoords.length);
-        System.arraycopy(maxDimensions, 0, n.dimensions, 0, maxDimensions.length);
+        n.rectangle.setX(minCoordinates[0]);
+        n.rectangle.setY(minCoordinates[1]);
+        n.rectangle.setW(maxDimensions[0]);
+        n.rectangle.setH(maxDimensions[1]);
     }
 
-    private RNode chooseLeaf(RNode n, RTree<T>.Entry e) {
+    private RNode chooseLeaf(RNode n, RNode e) {
         if (n.leaf) {
             return n;
         }
         double minInc = Double.MAX_VALUE;
         RNode next = null;
         for (RNode c : n.children) {
-            double inc = getRequiredExpansion(c.coordinates, c.dimensions, e);
+            double[] c_dimensions = new double[]{c.rectangle.getW(), c.rectangle.getH()};
+            double inc = getRequiredExpansion(c.rectangle, e);
             if (inc < minInc) {
                 minInc = inc;
                 next = c;
             } else if (inc == minInc) {
                 double curArea = 1.0f;
                 double thisArea = 1.0f;
-                for (int i = 0; i < c.dimensions.length; i++) {
-                    curArea *= next.dimensions[i];
-                    thisArea *= c.dimensions[i];
+                double[] next_dimensions = new double[]{next.rectangle.getW(), next.rectangle.getH()};
+                for (int i = 0; i < c_dimensions.length; i++) {
+                    curArea *= next_dimensions[i];
+                    thisArea *= c_dimensions[i];
                 }
                 if (thisArea < curArea) {
                     next = c;
@@ -225,14 +229,20 @@ public class RTree<T> {
         return chooseLeaf(next, e);
     }
 
-    private double getRequiredExpansion(double[] coordinates, double[] dimensions, RNode e) {
-        double area = getArea(dimensions);
+    private double getRequiredExpansion(Rectangle rectangle, RNode e) {
+        double[] coordinates = new double[]{rectangle.getX(), rectangle.getY()};
+        double[] dimensions = new double[]{rectangle.getW(), rectangle.getH()};
+
+        double[] e_coordinates = new double[]{e.rectangle.getX(), e.rectangle.getY()};
+        double[] e_dimensions = new double[]{e.rectangle.getW(), e.rectangle.getH()};
+
+        double area = getArea(rectangle);
         double[] deltas = new double[dimensions.length];
         for (int i = 0; i < deltas.length; i++) {
-            if (coordinates[i] + dimensions[i] < e.coordinates[i] + e.dimensions[i]) {
-                deltas[i] = e.coordinates[i] + e.dimensions[i] - coordinates[i] - dimensions[i];
-            } else if (coordinates[i] + dimensions[i] > e.coordinates[i] + e.dimensions[i]) {
-                deltas[i] = coordinates[i] - e.coordinates[i];
+            if (coordinates[i] + dimensions[i] < e_coordinates[i] + e_dimensions[i]) {
+                deltas[i] = e_coordinates[i] + e_dimensions[i] - coordinates[i] - dimensions[i];
+            } else if (coordinates[i] + dimensions[i] > e_coordinates[i] + e_dimensions[i]) {
+                deltas[i] = coordinates[i] - e_coordinates[i];
             }
         }
         double expanded = 1.0f;
@@ -242,51 +252,16 @@ public class RTree<T> {
         return (expanded - area);
     }
 
-    private double getArea(double[] dimensions) {
+    private double getArea(Rectangle rectangle) {
         double area = 1.0f;
-        for (int i = 0; i < dimensions.length; i++) {
-            area *= dimensions[i];
-        }
+        area *= (rectangle.getW() * rectangle.getY());
         return area;
     }
 
-    private boolean isOverlap(double[] scoordinates, double[] sdimensions, double[] coordinates, double[] dimensions) {
-        for (int i = 0; i < scoordinates.length; i++) {
-            boolean overlapInThisDimension = false;
-            if (scoordinates[i] == coordinates[i]) {
-                overlapInThisDimension = true;
-            } else if (scoordinates[i] < coordinates[i]) {
-                if (scoordinates[i] + sdimensions[i] >= coordinates[i]) {
-                    overlapInThisDimension = true;
-                }
-            } else if (scoordinates[i] > coordinates[i]) {
-                if (coordinates[i] + dimensions[i] >= scoordinates[i]) {
-                    overlapInThisDimension = true;
-                }
-            }
-            if (!overlapInThisDimension) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     private RNode buildRoot(boolean asLeaf) {
-        double[] initCoords = new double[dimension];
-        double[] initDimensions = new double[dimension];
-        for (int i = 0; i < this.dimension; i++) {
-            initCoords[i] = Math.sqrt(Double.MAX_VALUE);
-            initDimensions[i] = -2.0f * Math.sqrt(Double.MAX_VALUE);
-        }
-        return new RNode(initCoords, initDimensions, asLeaf);
-    }
-
-    private class Entry extends RNode {
-        final T entry;
-
-        public Entry(double[] coords, double[] dimensions, T entry) {
-            super(coords, dimensions, true);
-            this.entry = entry;
-        }
+        double coordinate = Math.sqrt(Double.MAX_VALUE);
+        double dimension = -2.0f * Math.sqrt(Double.MAX_VALUE);
+        Rectangle rectangle = new BaseRectangle(coordinate, coordinate, dimension, dimension);
+        return new RNode(rectangle, asLeaf);
     }
 }

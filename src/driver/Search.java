@@ -21,7 +21,7 @@ public class Search {
 
         List<Rectangle> q_rectangles = quadTree.search(new BaseRectangle(3.0, 3.0, 3.0, 3.0));
 
-        RTree<String> rtree = new RTree<String>();
+        RTree rtree = new RTree();
         rtree.insert(new BaseRectangle(5.0, 5.0, 10.0, 10.0, "1"));
         rtree.insert(new BaseRectangle(25.0, 25.0, 10.0, 10.0, "2"));
         rtree.insert(new BaseRectangle(5.0, 5.0, 12.0, 10.0, "3"));
@@ -30,6 +30,6 @@ public class Search {
         rtree.insert(new BaseRectangle(25.0, 5.0, 10.0, 10.0, "6"));
         rtree.insert(new BaseRectangle(2.0, 2.0, 2.0, 2.0, "6"));
 
-        List<String> r_rectangles = rtree.search(new BaseRectangle(3.0, 3.0, 3.0, 3.0));
+        List<Rectangle> r_rectangles = rtree.search(new BaseRectangle(3.0, 3.0, 3.0, 3.0));
     }
 }
