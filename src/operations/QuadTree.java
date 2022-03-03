@@ -1,7 +1,7 @@
 package operations;
 
 import models.quad.Rectangle;
-import models.quad.QuadRectangle;
+import models.quad.BaseRectangle;
 import util.Geometry;
 
 import java.util.ArrayList;
@@ -122,7 +122,7 @@ public class QuadTree {
             if (this.children[0] != null) {
                 for (int i = 0; i < this.children.length; i++) {
                     if (Geometry.rectangleObjectsOverlap(
-                            new QuadRectangle(Double.valueOf(this.children[i].getX()),
+                            new BaseRectangle(Double.valueOf(this.children[i].getX()),
                                               Double.valueOf(this.children[i].getY()), Double.valueOf(this.children[i].getW()),
                                               Double.valueOf(this.children[i].getH())), rectangle)) {
 
