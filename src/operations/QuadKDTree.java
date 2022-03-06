@@ -4,7 +4,7 @@ import models.kd.Point;
 import models.quad.BaseRectangle;
 import models.quad.Rectangle;
 
-public class HybridTree {
+public class QuadKDTree implements Tree {
 
     public boolean search(QuadTree quadTree, Rectangle boundary, Point point) {
         return true;

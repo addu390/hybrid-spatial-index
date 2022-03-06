@@ -10,7 +10,7 @@ import java.util.List;
 
 import static util.Geometry.getArea;
 
-public class RTree {
+public class RTree implements Tree {
 
     private final int maxObjects;
     private final int minObjects;

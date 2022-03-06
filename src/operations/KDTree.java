@@ -5,7 +5,7 @@ import models.kd.Point;
 
 import java.util.Objects;
 
-public class KDTree {
+public class KDTree implements Tree {
 
     public boolean search(KDNode root, Point point) {
         return searchNode(root, new int[]{point.getX(), point.getY()}, 0);

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
-public class QuadTree {
+public class QuadTree implements Tree {
 
     protected static final int QUADTREE = -1;
     protected static final int NE_CHILD = 0;
