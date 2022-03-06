@@ -5,6 +5,7 @@ import models.quad.Rectangle;
 public class HybridTree {
 
     public void insert(Rectangle boundingBox, int[] point) {
+
         // Treat the boundingBox as a regular rectangle (use a flag).
         // Add a KDTreeNode for the bounding box (rectangle).
         // Any successive inserts to the same BBox will insert to the existing KDTreeNode.
@@ -23,5 +24,14 @@ public class HybridTree {
 
     public void search(Rectangle rectangle) {
 
+    }
+
+    private boolean isPoint(Rectangle rectangle) {
+        if (rectangle.getX().equals(rectangle.getY())
+                && rectangle.getW().equals(rectangle.getH())
+                && rectangle.getX().equals(rectangle.getW())) {
+            return true;
+        }
+        return false;
     }
 }

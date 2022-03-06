@@ -1,36 +1,37 @@
 package operations;
 
-import models.KDNode;
+import models.kd.KDNode;
+import models.kd.Point;
 
 import java.util.Objects;
 
 public class KDTree {
 
-    public static boolean search(KDNode root, int[] dataPoint) {
-        return searchNode(root, dataPoint, 0);
+    public boolean search(KDNode root, Point point) {
+        return searchNode(root, new int[]{point.getX(), point.getY()}, 0);
     }
 
-    public static KDNode insert(KDNode root, int[] dataPoint) {
-        return insertNode(root, dataPoint, 0);
+    public KDNode insert(KDNode root, Point point) {
+        return insertNode(root, new int[]{point.getX(), point.getY()}, 0);
     }
 
-    public static KDNode nearestNeighbour(KDNode root, int[] dataPoint) {
-        return searchNearestNeighbour(root, dataPoint, Integer.MAX_VALUE, root);
+    public KDNode nearestNeighbour(KDNode root, Point point) {
+        return searchNearestNeighbour(root, new int[]{point.getX(), point.getY()}, Integer.MAX_VALUE, root);
     }
 
-    private static boolean searchNode(KDNode root, int[] dataPoint, int depth) {
+    private static boolean searchNode(KDNode root, int[] point, int depth) {
         if (Objects.isNull(root)) {
             return false;
         }
-        if (isEqual(root.dataPoint, dataPoint)) {
+        if (isEqual(root.point, point)) {
             return true;
         }
 
         int currentDimension = depth % KDNode.DIMENSION;
-        if (dataPoint[currentDimension] < root.dataPoint[currentDimension]) {
-            return searchNode(root.left, dataPoint, depth + 1);
+        if (point[currentDimension] < root.point[currentDimension]) {
+            return searchNode(root.left, point, depth + 1);
         } else {
-            return searchNode(root.right, dataPoint, depth + 1);
+            return searchNode(root.right, point, depth + 1);
         }
     }
 
@@ -38,8 +39,8 @@ public class KDTree {
         if (root == null)
             return bestNode;
 
-        double distanceFromNode = euclideanDistance(root.dataPoint, dataPoint);
-        if (euclideanDistance(root.dataPoint, dataPoint) < minDist) {
+        double distanceFromNode = euclideanDistance(root.point, dataPoint);
+        if (euclideanDistance(root.point, dataPoint) < minDist) {
             minDist = distanceFromNode;
             bestNode = root;
         }
@@ -52,7 +53,7 @@ public class KDTree {
             return searchNearestNeighbour(root.left, dataPoint, minDist, bestNode);
         }
 
-        if (euclideanDistance(root.left.dataPoint, dataPoint) < euclideanDistance(root.right.dataPoint, dataPoint)) {
+        if (euclideanDistance(root.left.point, dataPoint) < euclideanDistance(root.right.point, dataPoint)) {
             bestNode = searchNearestNeighbour(root.left, dataPoint, minDist, bestNode);
         } else {
             bestNode = searchNearestNeighbour(root.right, dataPoint, minDist, bestNode);
@@ -68,7 +69,7 @@ public class KDTree {
 
         int currentDimension = depth % KDNode.DIMENSION;
 
-        if (dataPoint[currentDimension] < (root.dataPoint[currentDimension])) {
+        if (dataPoint[currentDimension] < (root.point[currentDimension])) {
             root.left = insertNode(root.left, dataPoint, depth + 1);
         } else {
             root.right = insertNode(root.right, dataPoint, depth + 1);

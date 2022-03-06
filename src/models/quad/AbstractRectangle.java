@@ -1,6 +1,6 @@
 package models.quad;
 
-import models.KDNode;
+import models.kd.KDNode;
 
 public abstract class AbstractRectangle implements Rectangle {
 
@@ -11,7 +11,6 @@ public abstract class AbstractRectangle implements Rectangle {
     private Double h;
     private Double w;
 
-    // TODO: Create getter and setter
     private KDNode node;
     private boolean isBBox;
 
