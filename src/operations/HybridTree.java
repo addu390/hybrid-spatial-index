@@ -1,11 +1,20 @@
 package operations;
 
+import models.kd.Point;
+import models.quad.BaseRectangle;
 import models.quad.Rectangle;
 
 public class HybridTree {
 
-    public void insert(Rectangle boundingBox, int[] point) {
+    public boolean search(QuadTree quadTree, Rectangle boundary, Point point) {
+        return true;
+    }
 
+    public Rectangle search(Rectangle rectangle) {
+        return new BaseRectangle();
+    }
+
+    public void insert(Rectangle boundary, Point point) {
         // Treat the boundingBox as a regular rectangle (use a flag).
         // Add a KDTreeNode for the bounding box (rectangle).
         // Any successive inserts to the same BBox will insert to the existing KDTreeNode.
@@ -15,14 +24,6 @@ public class HybridTree {
     }
 
     public void insert(Rectangle rectangle) {
-
-    }
-
-    public void search(Rectangle boundingBox, int[] point) {
-
-    }
-
-    public void search(Rectangle rectangle) {
 
     }
 

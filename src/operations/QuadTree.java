@@ -18,6 +18,7 @@ public class QuadTree {
 
     private int maxObjects = 10;
     private int maxLevels = 5;
+
     private int defaultWidth = 100;
     private int defaultHeight = 100;
 

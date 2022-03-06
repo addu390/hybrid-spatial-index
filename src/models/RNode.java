@@ -1,10 +1,12 @@
 package models;
 
 import models.quad.Rectangle;
+import operations.KDTree;
 
 import java.util.LinkedList;
 
 public class RNode {
+    private KDTree tree;
     public final Rectangle rectangle;
     public final LinkedList<RNode> children;
     public final boolean leaf;
