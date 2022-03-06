@@ -2,28 +2,28 @@ package models.quad;
 
 public interface Rectangle {
 
-    public String getId();
+    String getId();
 
-    public void setId(String id);
+    void setId(String id);
 
-    public String getType();
+    String getType();
 
-    public void setType(String type);
+    void setType(String type);
 
-    public Double getX();
+    Double getX();
 
-    public void setX(Double x);
+    void setX(Double x);
 
-    public Double getY();
+    Double getY();
 
-    public void setY(Double y);
+    void setY(Double y);
 
-    public Double getH();
+    Double getH();
 
-    public void setH(Double h);
+    void setH(Double h);
 
-    public Double getW();
+    Double getW();
 
-    public void setW(Double w);
+    void setW(Double w);
 
 }
