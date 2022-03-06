@@ -1,7 +1,9 @@
-package operations;
+package operations.index;
 
 import models.kd.Point;
 import models.quad.Rectangle;
+import operations.HybridTree;
+import operations.Tree;
 
 public class RKDTree implements HybridTree {
 

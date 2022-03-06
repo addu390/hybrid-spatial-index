@@ -1,7 +1,8 @@
-package operations;
+package operations.index;
 
 import models.kd.KDNode;
 import models.kd.Point;
+import operations.Tree;
 
 import java.util.Objects;
 

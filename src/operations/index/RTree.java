@@ -1,8 +1,9 @@
-package operations;
+package operations.index;
 
 import models.RNode;
 import models.quad.BaseRectangle;
 import models.quad.Rectangle;
+import operations.Tree;
 import util.Geometry;
 
 import java.util.LinkedList;

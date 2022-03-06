@@ -1,7 +1,7 @@
 package models.quad;
 
 
-import operations.KDTree;
+import operations.index.KDTree;
 
 public class BaseRectangle extends AbstractRectangle {
 

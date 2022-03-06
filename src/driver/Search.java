@@ -2,11 +2,11 @@ package driver;
 
 import models.kd.KDNode;
 import models.kd.Point;
-import operations.KDTree;
-import operations.QuadTree;
+import operations.index.KDTree;
+import operations.index.QuadTree;
 import models.quad.BaseRectangle;
 import models.quad.Rectangle;
-import operations.RTree;
+import operations.index.RTree;
 
 import java.util.List;
 

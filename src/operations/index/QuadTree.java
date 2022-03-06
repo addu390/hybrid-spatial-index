@@ -1,7 +1,8 @@
-package operations;
+package operations.index;
 
 import models.quad.Rectangle;
 import models.quad.BaseRectangle;
+import operations.Tree;
 import util.Geometry;
 
 import java.util.ArrayList;

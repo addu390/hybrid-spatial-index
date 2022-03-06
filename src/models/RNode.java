@@ -1,7 +1,7 @@
 package models;
 
 import models.quad.Rectangle;
-import operations.KDTree;
+import operations.index.KDTree;
 
 import java.util.LinkedList;
 
