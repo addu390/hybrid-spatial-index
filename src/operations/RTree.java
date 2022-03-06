@@ -45,15 +45,15 @@ public class RTree implements Tree {
         }
     }
 
-    private void search(Rectangle rectangle, RNode n, LinkedList<Rectangle> results) {
-        if (n.leaf) {
-            for (RNode e : n.children) {
+    private void search(Rectangle rectangle, RNode rNode, LinkedList<Rectangle> results) {
+        if (rNode.leaf) {
+            for (RNode e : rNode.children) {
                 if (Geometry.isOverlap(rectangle, e.rectangle)) {
                     results.add(e.rectangle);
                 }
             }
         } else {
-            for (RNode c : n.children) {
+            for (RNode c : rNode.children) {
                 if (Geometry.isOverlap(rectangle, c.rectangle)) {
                     search(rectangle, c, results);
                 }
@@ -61,107 +61,110 @@ public class RTree implements Tree {
         }
     }
 
-    private void adjustTree(RNode n, RNode nn) {
-        if (n == parent) {
-            if (nn != null) {
+    private void adjustTree(RNode rNode, RNode nNode) {
+        if (rNode == parent) {
+            if (nNode != null) {
                 parent = build(false);
-                parent.children.add(n);
-                n.parent = parent;
-                parent.children.add(nn);
-                nn.parent = parent;
+                parent.children.add(rNode);
+                rNode.parent = parent;
+                parent.children.add(nNode);
+                nNode.parent = parent;
             }
             tighten(parent);
             return;
         }
-        tighten(n);
-        if (nn != null) {
-            tighten(nn);
-            if (n.parent.children.size() > maxObjects) {
-                RNode[] splits = splitNode(n.parent);
+        tighten(rNode);
+        if (nNode != null) {
+            tighten(nNode);
+            if (rNode.parent.children.size() > maxObjects) {
+                RNode[] splits = splitNode(rNode.parent);
                 adjustTree(splits[0], splits[1]);
             }
-        } else if (n.parent != null) {
-            adjustTree(n.parent, null);
+        } else if (rNode.parent != null) {
+            adjustTree(rNode.parent, null);
         }
     }
 
-    private RNode[] splitNode(RNode n) {
-        RNode[] nn = new RNode[]{n, new RNode(n.rectangle, n.leaf)};
-        nn[1].parent = n.parent;
-        if (nn[1].parent != null) {
-            nn[1].parent.children.add(nn[1]);
+    private RNode[] splitNode(RNode rNode) {
+        RNode[] rNodes = new RNode[]{rNode, new RNode(rNode.rectangle, rNode.leaf)};
+        rNodes[1].parent = rNode.parent;
+        if (rNodes[1].parent != null) {
+            rNodes[1].parent.children.add(rNodes[1]);
         }
-        LinkedList<RNode> cc = new LinkedList<RNode>(n.children);
-        n.children.clear();
+
+        LinkedList<RNode> cc = new LinkedList<>(rNode.children);
+        rNode.children.clear();
         RNode[] ss = pickSeeds(cc);
-        nn[0].children.add(ss[0]);
-        nn[1].children.add(ss[1]);
+        rNodes[0].children.add(ss[0]);
+        rNodes[1].children.add(ss[1]);
+
         while (!cc.isEmpty()) {
-            if ((nn[0].children.size() >= minObjects) &&
-                    (nn[1].children.size() + cc.size() == minObjects)) {
-                nn[1].children.addAll(cc);
+            if ((rNodes[0].children.size() >= minObjects) &&
+                    (rNodes[1].children.size() + cc.size() == minObjects)) {
+                rNodes[1].children.addAll(cc);
                 cc.clear();
-                return nn;
-            } else if ((nn[1].children.size() >= minObjects) &&
-                    (nn[1].children.size() + cc.size() == minObjects)) {
-                nn[0].children.addAll(cc);
+                return rNodes;
+            } else if ((rNodes[1].children.size() >= minObjects) &&
+                    (rNodes[1].children.size() + cc.size() == minObjects)) {
+                rNodes[0].children.addAll(cc);
                 cc.clear();
-                return nn;
+                return rNodes;
             }
             RNode c = cc.pop();
             RNode preferred;
-            double e0 = getExpansion(nn[0].rectangle, c);
-            double e1 = getExpansion(nn[1].rectangle, c);
+
+            double e0 = getExpansion(rNodes[0].rectangle, c);
+            double e1 = getExpansion(rNodes[1].rectangle, c);
             if (e0 < e1) {
-                preferred = nn[0];
+                preferred = rNodes[0];
             } else if (e0 > e1) {
-                preferred = nn[1];
+                preferred = rNodes[1];
             } else {
-                double a0 = getArea(nn[0].rectangle);
-                double a1 = getArea(nn[1].rectangle);
+                double a0 = getArea(rNodes[0].rectangle);
+                double a1 = getArea(rNodes[1].rectangle);
                 if (a0 < a1) {
-                    preferred = nn[0];
+                    preferred = rNodes[0];
                 } else if (e0 > a1) {
-                    preferred = nn[1];
+                    preferred = rNodes[1];
                 } else {
-                    if (nn[0].children.size() < nn[1].children.size()) {
-                        preferred = nn[0];
-                    } else if (nn[0].children.size() > nn[1].children.size()) {
-                        preferred = nn[1];
+                    if (rNodes[0].children.size() < rNodes[1].children.size()) {
+                        preferred = rNodes[0];
+                    } else if (rNodes[0].children.size() > rNodes[1].children.size()) {
+                        preferred = rNodes[1];
                     } else {
-                        preferred = nn[(int) Math.round(Math.random())];
+                        preferred = rNodes[(int) Math.round(Math.random())];
                     }
                 }
             }
             preferred.children.add(c);
         }
-        tighten(nn[0]);
-        tighten(nn[1]);
-        return nn;
+        tighten(rNodes[0]);
+        tighten(rNodes[1]);
+        return rNodes;
     }
 
-    private RNode[] pickSeeds(LinkedList<RNode> nn) {
+    private RNode[] pickSeeds(LinkedList<RNode> rNodes) {
         RNode[] bestPair = null;
         double bestSep = 0.0f;
         for (int i = 0; i < 2; i++) {
             double dimLb = Double.MAX_VALUE, dimMinUb = Double.MAX_VALUE;
             double dimUb = -1.0f * Double.MAX_VALUE, dimMaxLb = -1.0f * Double.MAX_VALUE;
             RNode nMaxLb = null, nMinUb = null;
-            for (RNode n : nn) {
-                double[] n_coordinates = new double[]{n.rectangle.getX(), n.rectangle.getY()};
-                double[] n_dimensions = new double[]{n.rectangle.getW(), n.rectangle.getH()};
-                if (n_coordinates[i] < dimLb) {
-                    dimLb = n_coordinates[i];
+            for (RNode n : rNodes) {
+                double[] nCoordinates = new double[]{n.rectangle.getX(), n.rectangle.getY()};
+                double[] nDimensions = new double[]{n.rectangle.getW(), n.rectangle.getH()};
+                if (nCoordinates[i] < dimLb) {
+                    dimLb = nCoordinates[i];
                 }
-                if (n_dimensions[i] + n_coordinates[i] > dimUb) {
-                    dimUb = n_dimensions[i] + n_coordinates[i];
+                if (nDimensions[i] + nCoordinates[i] > dimUb) {
+                    dimUb = nDimensions[i] + nCoordinates[i];
                 }
-                if (n_coordinates[i] > dimMaxLb) {
-                    dimMaxLb = n_coordinates[i];
+                if (nCoordinates[i] > dimMaxLb) {
+                    dimMaxLb = nCoordinates[i];
                     nMaxLb = n;
                 }
-                if (n_dimensions[i] + n_coordinates[i] < dimMinUb) {
-                    dimMinUb = n_dimensions[i] + n_coordinates[i];
+                if (nDimensions[i] + nCoordinates[i] < dimMinUb) {
+                    dimMinUb = nDimensions[i] + nCoordinates[i];
                     nMinUb = n;
                 }
             }
@@ -171,78 +174,78 @@ public class RTree implements Tree {
                 bestSep = sep;
             }
         }
-        nn.remove(bestPair[0]);
-        nn.remove(bestPair[1]);
+        rNodes.remove(bestPair[0]);
+        rNodes.remove(bestPair[1]);
         return bestPair;
     }
 
-    private void tighten(RNode n) {
+    private void tighten(RNode rNode) {
         double[] minCoordinates = new double[2];
         double[] maxDimensions = new double[2];
         for (int i = 0; i < minCoordinates.length; i++) {
             minCoordinates[i] = Double.MAX_VALUE;
             maxDimensions[i] = 0.0f;
 
-            for (RNode c : n.children) {
-                c.parent = n;
-                double[] c_coordinates = new double[]{c.rectangle.getX(), c.rectangle.getY()};
-                double[] c_dimensions = new double[]{c.rectangle.getW(), c.rectangle.getH()};
-                if (c_coordinates[i] < minCoordinates[i]) {
-                    minCoordinates[i] = c_coordinates[i];
+            for (RNode c : rNode.children) {
+                c.parent = rNode;
+                double[] cCoordinates = new double[]{c.rectangle.getX(), c.rectangle.getY()};
+                double[] cDimensions = new double[]{c.rectangle.getW(), c.rectangle.getH()};
+                if (cCoordinates[i] < minCoordinates[i]) {
+                    minCoordinates[i] = cCoordinates[i];
                 }
-                if ((c_coordinates[i] + c_dimensions[i]) > maxDimensions[i]) {
-                    maxDimensions[i] = (c_coordinates[i] + c_dimensions[i]);
+                if ((cCoordinates[i] + cDimensions[i]) > maxDimensions[i]) {
+                    maxDimensions[i] = (cCoordinates[i] + cDimensions[i]);
                 }
             }
         }
-        n.rectangle.setX(minCoordinates[0]);
-        n.rectangle.setY(minCoordinates[1]);
-        n.rectangle.setW(maxDimensions[0]);
-        n.rectangle.setH(maxDimensions[1]);
+        rNode.rectangle.setX(minCoordinates[0]);
+        rNode.rectangle.setY(minCoordinates[1]);
+        rNode.rectangle.setW(maxDimensions[0]);
+        rNode.rectangle.setH(maxDimensions[1]);
     }
 
-    private RNode chooseLeaf(RNode n, RNode e) {
-        if (n.leaf) {
-            return n;
+    private RNode chooseLeaf(RNode rNode, RNode nNode) {
+        if (rNode.leaf) {
+            return rNode;
         }
         double minInc = Double.MAX_VALUE;
         RNode next = null;
-        for (RNode c : n.children) {
-            double[] c_dimensions = new double[]{c.rectangle.getW(), c.rectangle.getH()};
-            double inc = getExpansion(c.rectangle, e);
+        for (RNode c : rNode.children) {
+            double[] cDimensions = new double[]{c.rectangle.getW(), c.rectangle.getH()};
+            double inc = getExpansion(c.rectangle, nNode);
             if (inc < minInc) {
                 minInc = inc;
                 next = c;
             } else if (inc == minInc) {
                 double curArea = 1.0f;
                 double thisArea = 1.0f;
-                double[] next_dimensions = new double[]{next.rectangle.getW(), next.rectangle.getH()};
-                for (int i = 0; i < c_dimensions.length; i++) {
-                    curArea *= next_dimensions[i];
-                    thisArea *= c_dimensions[i];
+                double[] nextDimensions = new double[]{next.rectangle.getW(), next.rectangle.getH()};
+                for (int i = 0; i < cDimensions.length; i++) {
+                    curArea *= nextDimensions[i];
+                    thisArea *= cDimensions[i];
                 }
                 if (thisArea < curArea) {
                     next = c;
                 }
             }
         }
-        return chooseLeaf(next, e);
+        return chooseLeaf(next, nNode);
     }
 
-    private double getExpansion(Rectangle rectangle, RNode e) {
+    private double getExpansion(Rectangle rectangle, RNode rNode) {
         double[] coordinates = new double[]{rectangle.getX(), rectangle.getY()};
         double[] dimensions = new double[]{rectangle.getW(), rectangle.getH()};
 
-        double[] e_coordinates = new double[]{e.rectangle.getX(), e.rectangle.getY()};
-        double[] e_dimensions = new double[]{e.rectangle.getW(), e.rectangle.getH()};
+        double[] eCoordinates = new double[]{rNode.rectangle.getX(), rNode.rectangle.getY()};
+        double[] eDimensions = new double[]{rNode.rectangle.getW(), rNode.rectangle.getH()};
 
         double area = getArea(rectangle);
         double[] deltas = new double[dimensions.length];
         for (int i = 0; i < deltas.length; i++) {
-            if (coordinates[i] + dimensions[i] < e_coordinates[i] + e_dimensions[i]) {
-                deltas[i] = e_coordinates[i] + e_dimensions[i] - coordinates[i] - dimensions[i];
-            } else if (coordinates[i] + dimensions[i] > e_coordinates[i] + e_dimensions[i]) {
-                deltas[i] = coordinates[i] - e_coordinates[i];
+            if (coordinates[i] + dimensions[i] < eCoordinates[i] + eDimensions[i]) {
+                deltas[i] = eCoordinates[i] + eDimensions[i] - coordinates[i] - dimensions[i];
+            } else if (coordinates[i] + dimensions[i] > eCoordinates[i] + eDimensions[i]) {
+                deltas[i] = coordinates[i] - eCoordinates[i];
             }
         }
         double expanded = 1.0f;
@@ -252,10 +255,10 @@ public class RTree implements Tree {
         return (expanded - area);
     }
 
-    private RNode build(boolean asLeaf) {
+    private RNode build(boolean isLeaf) {
         double coordinate = Math.sqrt(Double.MAX_VALUE);
         double dimension = -2.0f * Math.sqrt(Double.MAX_VALUE);
         Rectangle rectangle = new BaseRectangle(coordinate, coordinate, dimension, dimension);
-        return new RNode(rectangle, asLeaf);
+        return new RNode(rectangle, isLeaf);
     }
 }

@@ -19,8 +19,8 @@ public class QuadTree implements Tree {
     private int maxObjects = 10;
     private int maxLevels = 5;
 
-    private int defaultWidth = 100;
-    private int defaultHeight = 100;
+    private static final int DEFAULT_WIDTH = 100;
+    private static final int DEFAULT_HEIGHT = 100;
 
     private QuadTree parent;
 
@@ -39,8 +39,8 @@ public class QuadTree implements Tree {
         this.level = 0;
         this.x = 0;
         this.y = 0;
-        this.w = defaultWidth;
-        this.h = defaultHeight;
+        this.w = DEFAULT_WIDTH;
+        this.h = DEFAULT_HEIGHT;
         this.rectangles = new ArrayList<>();
         this.parent = null;
         this.children = new QuadTree[4];

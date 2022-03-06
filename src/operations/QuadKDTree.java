@@ -1,30 +1,30 @@
 package operations;
 
 import models.kd.Point;
-import models.quad.BaseRectangle;
 import models.quad.Rectangle;
 
-public class QuadKDTree implements Tree {
+public class QuadKDTree implements HybridTree {
 
-    public boolean search(QuadTree quadTree, Rectangle boundary, Point point) {
-        return true;
+    @Override
+    public Rectangle search(Tree tree, Rectangle rectangle) {
+        QuadTree quadTree = (QuadTree) tree;
+        return null;
     }
 
-    public Rectangle search(Rectangle rectangle) {
-        return new BaseRectangle();
+    @Override
+    public void insert(Tree tree, Rectangle rectangle) {
+        QuadTree quadTree = (QuadTree) tree;
     }
 
-    public void insert(Rectangle boundary, Point point) {
-        // Treat the boundingBox as a regular rectangle (use a flag).
-        // Add a KDTreeNode for the bounding box (rectangle).
-        // Any successive inserts to the same BBox will insert to the existing KDTreeNode.
-
-        // Bounding boxes cannot overlap.
-        // There can be a BBox and Rectangle (Only a flag to differentiate).
+    @Override
+    public Point search(Tree tree, Rectangle boundary, Point point) {
+        QuadTree quadTree = (QuadTree) tree;
+        return null;
     }
 
-    public void insert(Rectangle rectangle) {
-
+    @Override
+    public void insert(Tree tree, Rectangle boundary, Point point) {
+        QuadTree quadTree = (QuadTree) tree;
     }
 
     private boolean isPoint(Rectangle rectangle) {
