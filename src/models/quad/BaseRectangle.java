@@ -1,6 +1,8 @@
 package models.quad;
 
 
+import java.util.UUID;
+
 public class BaseRectangle extends AbstractRectangle {
 
     public BaseRectangle() {
@@ -12,8 +14,8 @@ public class BaseRectangle extends AbstractRectangle {
 
     public BaseRectangle(Double x, Double y, Double w, Double h) {
         super(x, y, w, h);
-        this.setType("quad-rectangle");
-        this.setId("ba737af4-51f2-4506-b7a8-cb581efe06aa");
+        this.setType("RECTANGLE");
+        this.setId(UUID.randomUUID().toString());
     }
 
     public BaseRectangle(Double x, Double y, Double w, Double h, String id) {

@@ -76,6 +76,7 @@ public class QuadTree implements SpaceTree {
         return h;
     }
 
+    @Override
     public List<Rectangle> search(Rectangle rectangle) {
 
         List<Rectangle> returnList = new ArrayList<>();
@@ -89,9 +90,10 @@ public class QuadTree implements SpaceTree {
         return returnList;
     }
 
+    @Override
     public void insert(Rectangle rectangle) {
         if (children[0] != null) {
-            int indexToPlaceObject = getChildIndexRectangleBelongsIn(rectangle);
+            int indexToPlaceObject = getChildIndex(rectangle);
 
             if (indexToPlaceObject != QuadTree.QUADTREE) {
                 children[indexToPlaceObject].insert(rectangle);
@@ -105,7 +107,7 @@ public class QuadTree implements SpaceTree {
 
             int i = 0;
             while (i < rectangles.size()) {
-                int indexToPlaceObject = getChildIndexRectangleBelongsIn(rectangles.get(i));
+                int indexToPlaceObject = getChildIndex(rectangles.get(i));
                 if (indexToPlaceObject != QuadTree.QUADTREE) {
                     children[indexToPlaceObject].insert(rectangles.remove(i));
                 } else {
@@ -115,11 +117,29 @@ public class QuadTree implements SpaceTree {
         }
     }
 
+    @Override
+    public boolean delete(Rectangle rectangle) {
+        int index = getChildIndex(rectangle);
+        if (index == QuadTree.QUADTREE || this.children[index] == null){
+            for (int i = 0; i < this.rectangles.size(); i++) {
+                if (rectangles.get(i).getId().equals(rectangle.getId())){
+                    rectangles.remove(i);
+                    return true;
+                }
+            }
+        } else {
+            this.children[index].delete(rectangle);
+            return true;
+        }
+
+        return false;
+    }
+
     private List<Rectangle> search(List<Rectangle> rectangles, Rectangle rectangle) {
 
         rectangles.addAll(this.rectangles);
 
-        int index = getChildIndexRectangleBelongsIn(rectangle);
+        int index = getChildIndex(rectangle);
         if (index == QuadTree.QUADTREE || this.children[0] == null) {
             if (this.children[0] != null) {
                 for (int i = 0; i < this.children.length; i++) {
@@ -148,15 +168,15 @@ public class QuadTree implements SpaceTree {
         children[QuadTree.SE_CHILD] = new QuadTree(this.maxObjects, this.maxLevels, this.level + 1, this.x + childWidth, this.y + childHeight, childWidth, childHeight, this);
     }
 
-    protected int getChildIndexRectangleBelongsIn(Rectangle rectangleObject) {
+    protected int getChildIndex(Rectangle rectangle) {
         int index = -1;
         double verticalDividingLine = getX() + getW() / 2;
         double horizontalDividingLine = getY() + getH() / 2;
 
-        boolean fitsCompletelyInNorthHalf = rectangleObject.getY() < horizontalDividingLine && (rectangleObject.getH() + rectangleObject.getY() < horizontalDividingLine);
-        boolean fitsCompletelyInSouthHalf = rectangleObject.getY() > horizontalDividingLine;
-        boolean fitsCompletelyInWestHalf = rectangleObject.getX() < verticalDividingLine && (rectangleObject.getX() + rectangleObject.getW() < verticalDividingLine);
-        boolean fitsCompletelyInEastHalf = rectangleObject.getX() > verticalDividingLine;
+        boolean fitsCompletelyInNorthHalf = rectangle.getY() < horizontalDividingLine && (rectangle.getH() + rectangle.getY() < horizontalDividingLine);
+        boolean fitsCompletelyInSouthHalf = rectangle.getY() > horizontalDividingLine;
+        boolean fitsCompletelyInWestHalf = rectangle.getX() < verticalDividingLine && (rectangle.getX() + rectangle.getW() < verticalDividingLine);
+        boolean fitsCompletelyInEastHalf = rectangle.getX() > verticalDividingLine;
 
         if (fitsCompletelyInEastHalf) {
             if (fitsCompletelyInNorthHalf) {

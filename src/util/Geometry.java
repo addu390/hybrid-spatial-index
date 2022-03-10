@@ -8,6 +8,13 @@ public class Geometry {
         return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
     }
 
+    public static Boolean isEqual(Rectangle r1, Rectangle r2) {
+        if (r1.getX().equals(r2.getX()) && r1.getX().equals(r2.getX()) && r1.getX().equals(r2.getX()) && r1.getX().equals(r2.getX())) {
+            return true;
+        }
+        return false;
+    }
+
     public static Boolean isOverlap(Rectangle r1, Rectangle r2) {
         if (r1.getX() > r2.getX() + r2.getW() || r2.getX() > r1.getX() + r1.getW()) {
             return false;

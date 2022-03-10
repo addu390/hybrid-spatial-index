@@ -9,4 +9,6 @@ public interface SpaceTree extends Tree {
     List<Rectangle> search(Rectangle rectangle);
 
     void insert(Rectangle rectangle);
+
+    boolean delete(Rectangle rectangle);
 }

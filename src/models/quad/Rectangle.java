@@ -36,5 +36,4 @@ public interface Rectangle {
     Node getNode();
 
     void setNode(Node node);
-
 }

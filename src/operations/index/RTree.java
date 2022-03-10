@@ -6,8 +6,7 @@ import models.quad.Rectangle;
 import operations.SpaceTree;
 import util.Geometry;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static util.Geometry.getArea;
 
@@ -16,6 +15,7 @@ public class RTree implements SpaceTree {
     private final int maxObjects;
     private final int minObjects;
     private RNode parent;
+    private volatile int size;
 
     public RTree(int maxObjects, int minObjects) {
         this.maxObjects = maxObjects;
@@ -27,12 +27,14 @@ public class RTree implements SpaceTree {
         this(50, 2);
     }
 
+    @Override
     public List<Rectangle> search(Rectangle rectangle) {
         LinkedList<Rectangle> results = new LinkedList<>();
         search(rectangle, parent, results);
         return results;
     }
 
+    @Override
     public void insert(Rectangle rectangle) {
         RNode e = new RNode(rectangle, true);
         RNode l = chooseLeaf(parent, e);
@@ -44,6 +46,25 @@ public class RTree implements SpaceTree {
         } else {
             adjustTree(l, null);
         }
+    }
+
+    @Override
+    public boolean delete(Rectangle rectangle) {
+        RNode lNode = findLeaf(parent, rectangle);
+        ListIterator<RNode> li = lNode.children.listIterator();
+        boolean isRemoved = false;
+        while (li.hasNext()) {
+            RNode e = li.next();
+            if (Geometry.isEqual(e.rectangle, rectangle)) {
+                isRemoved = true;
+                break;
+            }
+        }
+        if (isRemoved) {
+            condenseTree(lNode);
+            size--;
+        }
+        return isRemoved;
     }
 
     private void search(Rectangle rectangle, RNode rNode, LinkedList<Rectangle> results) {
@@ -254,6 +275,55 @@ public class RTree implements SpaceTree {
             area *= dimensions[i] + deltas[i];
         }
         return (expanded - area);
+    }
+
+    private RNode findLeaf(RNode n, Rectangle rectangle) {
+        if (n.leaf) {
+            for (RNode c: n.children) {
+                if (Geometry.isEqual(c.rectangle, rectangle)) {
+                    return n;
+                }
+            }
+        } else {
+            for (RNode c: n.children) {
+                if (Geometry.isOverlap(c.rectangle, rectangle)) {
+                    RNode result = findLeaf(c, rectangle);
+                    if (Objects.nonNull(result)) {
+                        return result;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private void condenseTree(RNode n) {
+        Set<RNode> q = new HashSet<RNode>();
+        while (n != parent) {
+            if (n.leaf && (n.children.size() < minObjects)) {
+                q.addAll(n.children);
+                n.parent.children.remove(n);
+            }
+            else if (!n.leaf && (n.children.size() < minObjects)) {
+                LinkedList<RNode> toVisit = new LinkedList<RNode>(n.children);
+                while (!toVisit.isEmpty()) {
+                    RNode c = toVisit.pop();
+                    if (c.leaf) {
+                        q.addAll(c.children);
+                    }
+                    else {
+                        toVisit.addAll(c.children);
+                    }
+                }
+                n.parent.children.remove(n);
+            } else {
+                tighten(n);
+            }
+            n = n.parent;
+        }
+        for (RNode ne: q) {
+            insert(ne.rectangle);
+        }
     }
 
     private RNode build(boolean isLeaf) {

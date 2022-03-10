@@ -1,7 +1,6 @@
 package models.quad;
 
 import models.Node;
-import models.kd.KDNode;
 
 public abstract class AbstractRectangle implements Rectangle {
 
