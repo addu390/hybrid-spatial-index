@@ -44,18 +44,18 @@ public class QuadKDTree implements HybridTree {
         QuadTree quadTree = (QuadTree) tree;
         List<Rectangle> rectangles = search(tree, boundary);
 
-        if (rectangles.isEmpty()) {
-            boundary.setBoundary(true);
-            boundary.setNode(new KDNode(point));
-            quadTree.insert(boundary);
-        } else {
-            for (Rectangle rectangle: rectangles) {
+        if (!rectangles.isEmpty()) {
+            for (Rectangle rectangle : rectangles) {
                 if (rectangle.getBoundary()) {
                     KDTree kdTree = new KDTree();
                     KDNode kdNode = (KDNode) rectangle.getNode();
                     kdTree.insert(kdNode, point);
+                    return;
                 }
             }
         }
+        boundary.setBoundary(true);
+        boundary.setNode(new KDNode(point));
+        quadTree.insert(boundary);
     }
 }

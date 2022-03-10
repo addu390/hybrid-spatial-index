@@ -3,6 +3,7 @@ package driver;
 import models.kd.KDNode;
 import models.kd.Point;
 import operations.index.KDTree;
+import operations.index.QuadKDTree;
 import operations.index.QuadTree;
 import models.quad.BaseRectangle;
 import models.quad.Rectangle;
@@ -20,7 +21,7 @@ public class Search {
         quadTree.insert(new BaseRectangle(25.0, 25.0, 10.0, 10.0, "4"));
         quadTree.insert(new BaseRectangle(5.0, 25.0, 20.0, 10.0, "5"));
         quadTree.insert(new BaseRectangle(25.0, 5.0, 10.0, 10.0, "6"));
-        quadTree.insert(new BaseRectangle(2.0, 2.0, 2.0, 2.0, "6"));
+        quadTree.insert(new BaseRectangle(2.0, 2.0, 2.0, 2.0, "7"));
 
         List<Rectangle> qRectangles = quadTree.search(new BaseRectangle(3.0, 3.0, 3.0, 3.0));
 
@@ -31,7 +32,7 @@ public class Search {
         rtree.insert(new BaseRectangle(25.0, 25.0, 10.0, 10.0, "4"));
         rtree.insert(new BaseRectangle(5.0, 25.0, 20.0, 10.0, "5"));
         rtree.insert(new BaseRectangle(25.0, 5.0, 10.0, 10.0, "6"));
-        rtree.insert(new BaseRectangle(2.0, 2.0, 2.0, 2.0, "6"));
+        rtree.insert(new BaseRectangle(2.0, 2.0, 2.0, 2.0, "7"));
 
         List<Rectangle> rRectangles = rtree.search(new BaseRectangle(3.0, 3.0, 3.0, 3.0));
 
@@ -47,6 +48,24 @@ public class Search {
 
         kdTree.search(root, new Point(1, 2));
 
-        KDTree kdTree2 = new KDTree();
+        QuadKDTree hQuadKDTree = new QuadKDTree();
+        QuadTree hQuadTree = new QuadTree();
+        hQuadKDTree.insert(hQuadTree, new BaseRectangle(10.0, 10.0, 10.0, 10.0, "0"));
+        hQuadKDTree.insert(hQuadTree, new BaseRectangle(5.0, 5.0, 10.0, 10.0, "1"));
+        hQuadKDTree.insert(hQuadTree, new BaseRectangle(25.0, 25.0, 10.0, 10.0, "2"));
+        hQuadKDTree.insert(hQuadTree, new BaseRectangle(5.0, 5.0, 12.0, 10.0, "3"));
+        hQuadKDTree.insert(hQuadTree, new BaseRectangle(25.0, 25.0, 10.0, 10.0, "4"));
+        hQuadKDTree.insert(hQuadTree, new BaseRectangle(5.0, 25.0, 20.0, 10.0, "5"));
+        hQuadKDTree.insert(hQuadTree, new BaseRectangle(25.0, 5.0, 10.0, 10.0, "6"));
+        hQuadKDTree.insert(hQuadTree, new BaseRectangle(2.0, 2.0, 2.0, 2.0, "7"));
+
+        hQuadKDTree.search(hQuadTree, new BaseRectangle(3.0, 3.0, 3.0, 3.0));
+
+        Rectangle boundary = new BaseRectangle(5.0, 5.0, 5.0, 5.0);
+        hQuadKDTree.insert(hQuadTree, boundary, new Point(1, 1));
+        hQuadKDTree.insert(hQuadTree, boundary, new Point(2, 2));
+        hQuadKDTree.insert(hQuadTree, boundary, new Point(1, 2));
+
+        hQuadKDTree.search(hQuadTree, boundary, new Point(1, 1));
     }
 }
