@@ -3,7 +3,7 @@ package operations.index;
 import models.RNode;
 import models.quad.BaseRectangle;
 import models.quad.Rectangle;
-import operations.Tree;
+import operations.SpaceTree;
 import util.Geometry;
 
 import java.util.LinkedList;
@@ -11,7 +11,7 @@ import java.util.List;
 
 import static util.Geometry.getArea;
 
-public class RTree implements Tree {
+public class RTree implements SpaceTree {
 
     private final int maxObjects;
     private final int minObjects;

@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface HybridTree extends Tree {
 
-    List<Rectangle> search(Tree tree, Rectangle rectangle);
+    List<Rectangle> search(SpaceTree tree, Rectangle rectangle);
 
-    void insert(Tree tree, Rectangle rectangle);
+    void insert(SpaceTree tree, Rectangle rectangle);
 
-    boolean search(Tree tree, Rectangle boundary, Point point);
+    boolean search(SpaceTree tree, Rectangle boundary, Point point);
 
-    void insert(Tree tree, Rectangle boundary, Point point);
+    void insert(SpaceTree tree, Rectangle boundary, Point point);
 }

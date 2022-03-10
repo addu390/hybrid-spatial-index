@@ -2,12 +2,9 @@ package driver;
 
 import models.kd.KDNode;
 import models.kd.Point;
-import operations.index.KDTree;
-import operations.index.QuadKDTree;
-import operations.index.QuadTree;
+import operations.index.*;
 import models.quad.BaseRectangle;
 import models.quad.Rectangle;
-import operations.index.RTree;
 
 import java.util.List;
 
@@ -61,11 +58,32 @@ public class Search {
 
         hQuadKDTree.search(hQuadTree, new BaseRectangle(3.0, 3.0, 3.0, 3.0));
 
-        Rectangle boundary = new BaseRectangle(5.0, 5.0, 5.0, 5.0);
-        hQuadKDTree.insert(hQuadTree, boundary, new Point(1, 1));
-        hQuadKDTree.insert(hQuadTree, boundary, new Point(2, 2));
-        hQuadKDTree.insert(hQuadTree, boundary, new Point(1, 2));
+        Rectangle qBoundary = new BaseRectangle(5.0, 5.0, 5.0, 5.0);
+        hQuadKDTree.insert(hQuadTree, qBoundary, new Point(1, 1));
+        hQuadKDTree.insert(hQuadTree, qBoundary, new Point(2, 2));
+        hQuadKDTree.insert(hQuadTree, qBoundary, new Point(1, 2));
 
-        hQuadKDTree.search(hQuadTree, boundary, new Point(1, 1));
+        hQuadKDTree.search(hQuadTree, qBoundary, new Point(1, 1));
+
+
+        RKDTree hRKDTree = new RKDTree();
+        RTree hRTree = new RTree();
+        hRKDTree.insert(hRTree, new BaseRectangle(10.0, 10.0, 10.0, 10.0, "0"));
+        hRKDTree.insert(hRTree, new BaseRectangle(5.0, 5.0, 10.0, 10.0, "1"));
+        hRKDTree.insert(hRTree, new BaseRectangle(25.0, 25.0, 10.0, 10.0, "2"));
+        hRKDTree.insert(hRTree, new BaseRectangle(5.0, 5.0, 12.0, 10.0, "3"));
+        hRKDTree.insert(hRTree, new BaseRectangle(25.0, 25.0, 10.0, 10.0, "4"));
+        hRKDTree.insert(hRTree, new BaseRectangle(5.0, 25.0, 20.0, 10.0, "5"));
+        hRKDTree.insert(hRTree, new BaseRectangle(25.0, 5.0, 10.0, 10.0, "6"));
+        hRKDTree.insert(hRTree, new BaseRectangle(2.0, 2.0, 2.0, 2.0, "7"));
+
+        hRKDTree.search(hRTree, new BaseRectangle(3.0, 3.0, 3.0, 3.0));
+
+        Rectangle rBoundary = new BaseRectangle(5.0, 5.0, 5.0, 5.0);
+        hRKDTree.insert(hRTree, rBoundary, new Point(1, 1));
+        hRKDTree.insert(hRTree, rBoundary, new Point(2, 2));
+        hRKDTree.insert(hRTree, rBoundary, new Point(1, 2));
+
+        hRKDTree.search(hRTree, rBoundary, new Point(1, 1));
     }
 }
