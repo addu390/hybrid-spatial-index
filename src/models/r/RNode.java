@@ -1,5 +1,6 @@
-package models;
+package models.r;
 
+import models.Node;
 import models.quad.Rectangle;
 
 import java.util.LinkedList;

@@ -1,6 +1,6 @@
 package operations.index;
 
-import models.RNode;
+import models.r.RNode;
 import models.quad.BaseRectangle;
 import models.quad.Rectangle;
 import operations.SpaceTree;
