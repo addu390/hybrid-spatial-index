@@ -1,5 +1,6 @@
 package models.quad;
 
+import models.Node;
 import models.kd.KDNode;
 
 public abstract class AbstractRectangle implements Rectangle {
@@ -11,11 +12,11 @@ public abstract class AbstractRectangle implements Rectangle {
     private Double h;
     private Double w;
 
-    private KDNode node;
-    private boolean isBBox;
+    private Node node = null;
+    private boolean boundary = false;
 
     public AbstractRectangle(){}
-    public AbstractRectangle(Double x, Double y, Double w, Double h){
+    public AbstractRectangle(Double x, Double y, Double w, Double h) {
         this.x = x;
         this.y = y;
         this.w = w;
@@ -68,6 +69,22 @@ public abstract class AbstractRectangle implements Rectangle {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public Node getNode() {
+        return node;
+    }
+
+    public void setNode(Node node) {
+        this.node = node;
+    }
+
+    public boolean getBoundary() {
+        return boundary;
+    }
+
+    public void setBoundary(boolean boundary) {
+        this.boundary = boundary;
     }
 
 }

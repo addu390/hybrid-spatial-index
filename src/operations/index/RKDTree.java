@@ -5,23 +5,26 @@ import models.quad.Rectangle;
 import operations.HybridTree;
 import operations.Tree;
 
+import java.util.List;
+
 public class RKDTree implements HybridTree {
 
     @Override
-    public Rectangle search(Tree tree, Rectangle rectangle) {
+    public List<Rectangle> search(Tree tree, Rectangle rectangle) {
         RTree rTree = (RTree) tree;
-        return null;
+        return rTree.search(rectangle);
     }
 
     @Override
     public void insert(Tree tree, Rectangle rectangle) {
         RTree rTree = (RTree) tree;
+        rTree.insert(rectangle);
     }
 
     @Override
-    public Point search(Tree tree, Rectangle boundary, Point point) {
+    public boolean search(Tree tree, Rectangle boundary, Point point) {
         RTree rTree = (RTree) tree;
-        return null;
+        return true;
     }
 
     @Override

@@ -1,6 +1,8 @@
 package models.kd;
 
-public class KDNode {
+import models.Node;
+
+public class KDNode implements Node {
 
     public int[] point;
     public final static int DIMENSION = 2;

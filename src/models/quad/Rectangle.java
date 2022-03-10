@@ -1,5 +1,8 @@
 package models.quad;
 
+
+import models.Node;
+
 public interface Rectangle {
 
     String getId();
@@ -25,5 +28,13 @@ public interface Rectangle {
     Double getW();
 
     void setW(Double w);
+
+    boolean getBoundary();
+
+    void setBoundary(boolean boundary);
+
+    Node getNode();
+
+    void setNode(Node node);
 
 }

@@ -46,5 +46,7 @@ public class Search {
         kdTree.insert(root, new Point(8, 1));
 
         kdTree.search(root, new Point(1, 2));
+
+        KDTree kdTree2 = new KDTree();
     }
 }

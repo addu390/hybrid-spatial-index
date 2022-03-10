@@ -1,40 +1,61 @@
 package operations.index;
 
+import models.kd.KDNode;
 import models.kd.Point;
 import models.quad.Rectangle;
 import operations.HybridTree;
 import operations.Tree;
 
+import java.util.List;
+
 public class QuadKDTree implements HybridTree {
 
     @Override
-    public Rectangle search(Tree tree, Rectangle rectangle) {
+    public List<Rectangle> search(Tree tree, Rectangle rectangle) {
         QuadTree quadTree = (QuadTree) tree;
-        return null;
+        return quadTree.search(rectangle);
     }
 
     @Override
     public void insert(Tree tree, Rectangle rectangle) {
         QuadTree quadTree = (QuadTree) tree;
+        quadTree.insert(rectangle);
     }
 
     @Override
-    public Point search(Tree tree, Rectangle boundary, Point point) {
+    public boolean search(Tree tree, Rectangle boundary, Point point) {
         QuadTree quadTree = (QuadTree) tree;
-        return null;
+        List<Rectangle> rectangles = quadTree.search(boundary);
+
+        for (Rectangle rectangle: rectangles) {
+            if (rectangle.getBoundary()) {
+                KDTree kdTree = new KDTree();
+                KDNode kdNode = (KDNode) rectangle.getNode();
+                if (kdTree.search(kdNode, point)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
     public void insert(Tree tree, Rectangle boundary, Point point) {
         QuadTree quadTree = (QuadTree) tree;
-    }
+        List<Rectangle> rectangles = search(tree, boundary);
 
-    private boolean isPoint(Rectangle rectangle) {
-        if (rectangle.getX().equals(rectangle.getY())
-                && rectangle.getW().equals(rectangle.getH())
-                && rectangle.getX().equals(rectangle.getW())) {
-            return true;
+        if (rectangles.isEmpty()) {
+            boundary.setBoundary(true);
+            boundary.setNode(new KDNode(point));
+            quadTree.insert(boundary);
+        } else {
+            for (Rectangle rectangle: rectangles) {
+                if (rectangle.getBoundary()) {
+                    KDTree kdTree = new KDTree();
+                    KDNode kdNode = (KDNode) rectangle.getNode();
+                    kdTree.insert(kdNode, point);
+                }
+            }
         }
-        return false;
     }
 }

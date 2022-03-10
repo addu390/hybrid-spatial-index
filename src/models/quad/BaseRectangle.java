@@ -1,11 +1,7 @@
 package models.quad;
 
 
-import operations.index.KDTree;
-
 public class BaseRectangle extends AbstractRectangle {
-
-    private KDTree tree;
 
     public BaseRectangle() {
         this.setX(0.0);
@@ -23,13 +19,5 @@ public class BaseRectangle extends AbstractRectangle {
     public BaseRectangle(Double x, Double y, Double w, Double h, String id) {
         super(x, y, w, h);
         this.setId(id);
-    }
-
-    public KDTree getTree() {
-        return tree;
-    }
-
-    public void setTree(KDTree tree) {
-        this.tree = tree;
     }
 }
