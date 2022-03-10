@@ -15,7 +15,6 @@ public class RTree implements SpaceTree {
     private final int maxObjects;
     private final int minObjects;
     private RNode parent;
-    private volatile int size;
 
     public RTree(int maxObjects, int minObjects) {
         this.maxObjects = maxObjects;
@@ -62,7 +61,6 @@ public class RTree implements SpaceTree {
         }
         if (isRemoved) {
             condenseTree(lNode);
-            size--;
         }
         return isRemoved;
     }
@@ -114,29 +112,29 @@ public class RTree implements SpaceTree {
             rNodes[1].parent.children.add(rNodes[1]);
         }
 
-        LinkedList<RNode> cc = new LinkedList<>(rNode.children);
+        LinkedList<RNode> cNodes = new LinkedList<>(rNode.children);
         rNode.children.clear();
-        RNode[] ss = pickSeeds(cc);
-        rNodes[0].children.add(ss[0]);
-        rNodes[1].children.add(ss[1]);
+        RNode[] sNodes = pickSeeds(cNodes);
+        rNodes[0].children.add(sNodes[0]);
+        rNodes[1].children.add(sNodes[1]);
 
-        while (!cc.isEmpty()) {
+        while (!cNodes.isEmpty()) {
             if ((rNodes[0].children.size() >= minObjects) &&
-                    (rNodes[1].children.size() + cc.size() == minObjects)) {
-                rNodes[1].children.addAll(cc);
-                cc.clear();
+                    (rNodes[1].children.size() + cNodes.size() == minObjects)) {
+                rNodes[1].children.addAll(cNodes);
+                cNodes.clear();
                 return rNodes;
             } else if ((rNodes[1].children.size() >= minObjects) &&
-                    (rNodes[1].children.size() + cc.size() == minObjects)) {
-                rNodes[0].children.addAll(cc);
-                cc.clear();
+                    (rNodes[1].children.size() + cNodes.size() == minObjects)) {
+                rNodes[0].children.addAll(cNodes);
+                cNodes.clear();
                 return rNodes;
             }
-            RNode c = cc.pop();
+            RNode cNode = cNodes.pop();
             RNode preferred;
 
-            double e0 = getExpansion(rNodes[0].rectangle, c);
-            double e1 = getExpansion(rNodes[1].rectangle, c);
+            double e0 = getExpansion(rNodes[0].rectangle, cNode);
+            double e1 = getExpansion(rNodes[1].rectangle, cNode);
             if (e0 < e1) {
                 preferred = rNodes[0];
             } else if (e0 > e1) {
@@ -158,7 +156,7 @@ public class RTree implements SpaceTree {
                     }
                 }
             }
-            preferred.children.add(c);
+            preferred.children.add(cNode);
         }
         tighten(rNodes[0]);
         tighten(rNodes[1]);
@@ -208,10 +206,10 @@ public class RTree implements SpaceTree {
             minCoordinates[i] = Double.MAX_VALUE;
             maxDimensions[i] = 0.0f;
 
-            for (RNode c : rNode.children) {
-                c.parent = rNode;
-                double[] cCoordinates = new double[]{c.rectangle.getX(), c.rectangle.getY()};
-                double[] cDimensions = new double[]{c.rectangle.getW(), c.rectangle.getH()};
+            for (RNode cNode : rNode.children) {
+                cNode.parent = rNode;
+                double[] cCoordinates = new double[]{cNode.rectangle.getX(), cNode.rectangle.getY()};
+                double[] cDimensions = new double[]{cNode.rectangle.getW(), cNode.rectangle.getH()};
                 if (cCoordinates[i] < minCoordinates[i]) {
                     minCoordinates[i] = cCoordinates[i];
                 }
@@ -232,12 +230,12 @@ public class RTree implements SpaceTree {
         }
         double minInc = Double.MAX_VALUE;
         RNode next = null;
-        for (RNode c : rNode.children) {
-            double[] cDimensions = new double[]{c.rectangle.getW(), c.rectangle.getH()};
-            double inc = getExpansion(c.rectangle, nNode);
+        for (RNode cNode : rNode.children) {
+            double[] cDimensions = new double[]{cNode.rectangle.getW(), cNode.rectangle.getH()};
+            double inc = getExpansion(cNode.rectangle, nNode);
             if (inc < minInc) {
                 minInc = inc;
-                next = c;
+                next = cNode;
             } else if (inc == minInc) {
                 double curArea = 1.0f;
                 double thisArea = 1.0f;
@@ -247,7 +245,7 @@ public class RTree implements SpaceTree {
                     thisArea *= cDimensions[i];
                 }
                 if (thisArea < curArea) {
-                    next = c;
+                    next = cNode;
                 }
             }
         }
@@ -277,17 +275,17 @@ public class RTree implements SpaceTree {
         return (expanded - area);
     }
 
-    private RNode findLeaf(RNode n, Rectangle rectangle) {
-        if (n.leaf) {
-            for (RNode c: n.children) {
-                if (Geometry.isEqual(c.rectangle, rectangle)) {
-                    return n;
+    private RNode findLeaf(RNode rNode, Rectangle rectangle) {
+        if (rNode.leaf) {
+            for (RNode cNode: rNode.children) {
+                if (Geometry.isEqual(cNode.rectangle, rectangle)) {
+                    return rNode;
                 }
             }
         } else {
-            for (RNode c: n.children) {
-                if (Geometry.isOverlap(c.rectangle, rectangle)) {
-                    RNode result = findLeaf(c, rectangle);
+            for (RNode cNode: rNode.children) {
+                if (Geometry.isOverlap(cNode.rectangle, rectangle)) {
+                    RNode result = findLeaf(cNode, rectangle);
                     if (Objects.nonNull(result)) {
                         return result;
                     }
@@ -297,32 +295,32 @@ public class RTree implements SpaceTree {
         return null;
     }
 
-    private void condenseTree(RNode n) {
-        Set<RNode> q = new HashSet<RNode>();
-        while (n != parent) {
-            if (n.leaf && (n.children.size() < minObjects)) {
-                q.addAll(n.children);
-                n.parent.children.remove(n);
+    private void condenseTree(RNode rNode) {
+        Set<RNode> rNodes = new HashSet<RNode>();
+        while (rNode != parent) {
+            if (rNode.leaf && (rNode.children.size() < minObjects)) {
+                rNodes.addAll(rNode.children);
+                rNode.parent.children.remove(rNode);
             }
-            else if (!n.leaf && (n.children.size() < minObjects)) {
-                LinkedList<RNode> toVisit = new LinkedList<RNode>(n.children);
+            else if (!rNode.leaf && (rNode.children.size() < minObjects)) {
+                LinkedList<RNode> toVisit = new LinkedList<RNode>(rNode.children);
                 while (!toVisit.isEmpty()) {
-                    RNode c = toVisit.pop();
-                    if (c.leaf) {
-                        q.addAll(c.children);
+                    RNode cNode = toVisit.pop();
+                    if (cNode.leaf) {
+                        rNodes.addAll(cNode.children);
                     }
                     else {
-                        toVisit.addAll(c.children);
+                        toVisit.addAll(cNode.children);
                     }
                 }
-                n.parent.children.remove(n);
+                rNode.parent.children.remove(rNode);
             } else {
-                tighten(n);
+                tighten(rNode);
             }
-            n = n.parent;
+            rNode = rNode.parent;
         }
-        for (RNode ne: q) {
-            insert(ne.rectangle);
+        for (RNode eNode: rNodes) {
+            insert(eNode.rectangle);
         }
     }
 
