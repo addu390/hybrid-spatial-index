@@ -1,6 +1,7 @@
 package models.kd;
 
 import models.Node;
+import models.Point;
 
 public class KDNode implements Node {
 

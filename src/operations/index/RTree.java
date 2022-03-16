@@ -2,7 +2,7 @@ package operations.index;
 
 import models.r.RNode;
 import models.quad.BaseRectangle;
-import models.quad.Rectangle;
+import models.Rectangle;
 import operations.SpaceTree;
 import util.Geometry;
 

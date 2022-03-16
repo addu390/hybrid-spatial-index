@@ -1,6 +1,4 @@
-package models.quad;
-
-import models.Node;
+package models;
 
 public abstract class AbstractRectangle implements Rectangle {
 

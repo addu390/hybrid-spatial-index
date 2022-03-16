@@ -1,6 +1,8 @@
 package models.quad;
 
 
+import models.AbstractRectangle;
+
 import java.util.UUID;
 
 public class BaseRectangle extends AbstractRectangle {

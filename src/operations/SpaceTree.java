@@ -1,6 +1,6 @@
 package operations;
 
-import models.quad.Rectangle;
+import models.Rectangle;
 
 import java.util.List;
 

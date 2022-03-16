@@ -1,6 +1,6 @@
 package operations.index;
 
-import models.quad.Rectangle;
+import models.Rectangle;
 import models.quad.BaseRectangle;
 import operations.SpaceTree;
 import util.Geometry;

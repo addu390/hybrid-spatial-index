@@ -1,8 +1,8 @@
 package operations;
 
 import models.kd.KDNode;
-import models.kd.Point;
-import models.quad.Rectangle;
+import models.Point;
+import models.Rectangle;
 import operations.index.KDTree;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package operations;
 
-import models.kd.Point;
-import models.quad.Rectangle;
+import models.Point;
+import models.Rectangle;
 
 import java.util.List;
 

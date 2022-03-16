@@ -1,7 +1,5 @@
-package models.quad;
+package models;
 
-
-import models.Node;
 
 public interface Rectangle {
 

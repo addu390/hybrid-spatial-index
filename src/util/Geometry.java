@@ -1,6 +1,6 @@
 package util;
 
-import models.quad.Rectangle;
+import models.Rectangle;
 
 public class Geometry {
 

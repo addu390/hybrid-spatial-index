@@ -1,4 +1,4 @@
-package models.kd;
+package models;
 
 public class Point {
     private int x;

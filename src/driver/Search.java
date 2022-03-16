@@ -1,10 +1,11 @@
 package driver;
 
 import models.kd.KDNode;
-import models.kd.Point;
+import models.Point;
 import operations.index.*;
 import models.quad.BaseRectangle;
-import models.quad.Rectangle;
+import models.Rectangle;
+import util.Generator;
 
 import java.util.List;
 
@@ -16,6 +17,9 @@ public class Search {
         kdTree();
         quadKdTree();
         rKdTree();
+
+        Generator.points(100, 1000, 30, 10);
+        Generator.rectangles(100, 1000, 30);
     }
 
     public static void quadTree() {
