@@ -1,16 +1,15 @@
 package driver;
 
-import models.kd.KDNode;
 import models.Point;
-import operations.index.*;
-import models.quad.BaseRectangle;
 import models.Rectangle;
+import models.kd.KDNode;
+import models.quad.BaseRectangle;
+import operations.index.*;
 import util.Generator;
 
 import java.util.List;
 
-public class Search {
-
+public class Usage {
     public static void main(String[] args) {
         quadTree();
         rTree();
