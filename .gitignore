@@ -5,3 +5,12 @@ target/
 hybrid-spatial-index.iml
 *.DS_Store
 out
+
+*.class
+*.log
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
