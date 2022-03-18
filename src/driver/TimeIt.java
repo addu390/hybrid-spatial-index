@@ -1,6 +1,5 @@
 package driver;
 
-
 import models.Point;
 import models.Rectangle;
 import models.quad.BaseRectangle;
@@ -16,6 +15,9 @@ import java.util.List;
 
 public class TimeIt {
     public static void main(String[] args) {
+        System.out.printf("%-15s %-20s %-20s %n", "Hybrid Tree", "Creation Time (ns)", "Search Time (ns)");
+        String format = "%-15s %-20d %-20d %n";
+
         QuadKDTree hQuadKDTree = new QuadKDTree();
         QuadTree hQuadTree = new QuadTree();
 
@@ -29,36 +31,33 @@ public class TimeIt {
         long c1 = constructionTime(hQuadKDTree, hQuadTree, rectangles, points, boundary);
         long c2 = constructionTime(hRKDTree, hRTree, rectangles, points, boundary);
 
-        System.out.println("Quad-KD Tree Creation Time: "+ c1);
-        System.out.println("R-KD Tree Creation Time: "+ c2);
-
         long s1 = searchTime(hQuadKDTree, hQuadTree, points, boundary);
         long s2 = searchTime(hRKDTree, hRTree, points, boundary);
 
-        System.out.println("Quad-KD Tree Search Time: "+ s1);
-        System.out.println("R-KD Tree Search Time: "+ s2);
+        System.out.printf(format, "Quad-KD", s1, c1);
+        System.out.printf(format, "R-KD", s2, c2);
     }
 
-    public static long constructionTime(HybridTree hybridTree, SpaceTree gridTree,
+    private static long constructionTime(HybridTree hybridTree, SpaceTree gridTree,
                                         List<Rectangle> rectangles, List<Point> points,
                                         Rectangle boundary) {
-        long startTimeKDIns = System.nanoTime();
+        long startTime = System.nanoTime();
         for (Rectangle rectangle: rectangles) {
             hybridTree.insert(gridTree, rectangle);
         }
         for (Point point: points) {
             hybridTree.insert(gridTree, boundary, point);
         }
-        long endTimeKDIns = System.nanoTime();
-        return (endTimeKDIns - startTimeKDIns);
+        long endTime = System.nanoTime();
+        return (endTime - startTime);
     }
 
-    public static long searchTime(HybridTree hybridTree, SpaceTree gridTree, List<Point> points, Rectangle boundary) {
-        long startTimeKDSearch = System.nanoTime();
+    private static long searchTime(HybridTree hybridTree, SpaceTree gridTree, List<Point> points, Rectangle boundary) {
+        long startTime = System.nanoTime();
         for (Point point: points) {
             hybridTree.search(gridTree, boundary, point);
         }
-        long endTimeKDSearch = System.nanoTime();
-        return (endTimeKDSearch - startTimeKDSearch)/points.size();
+        long endTime = System.nanoTime();
+        return (endTime - startTime)/points.size();
     }
 }
