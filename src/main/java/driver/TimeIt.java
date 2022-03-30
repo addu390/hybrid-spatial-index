@@ -4,7 +4,7 @@ import models.Point;
 import models.Rectangle;
 import models.quad.BaseRectangle;
 import operations.HybridTree;
-import operations.SpaceTree;
+import operations.RegionTree;
 import operations.index.QuadKDTree;
 import operations.index.QuadTree;
 import operations.index.RKDTree;
@@ -38,7 +38,7 @@ public class TimeIt {
         System.out.printf(format, "R-KD", s2, c2);
     }
 
-    private static long constructionTime(HybridTree hybridTree, SpaceTree gridTree,
+    private static long constructionTime(HybridTree hybridTree, RegionTree gridTree,
                                         List<Rectangle> rectangles, List<Point> points,
                                         Rectangle boundary) {
         long startTime = System.nanoTime();
@@ -52,7 +52,7 @@ public class TimeIt {
         return (endTime - startTime);
     }
 
-    private static long searchTime(HybridTree hybridTree, SpaceTree gridTree, List<Point> points, Rectangle boundary) {
+    private static long searchTime(HybridTree hybridTree, RegionTree gridTree, List<Point> points, Rectangle boundary) {
         long startTime = System.nanoTime();
         for (Point point: points) {
             hybridTree.search(gridTree, boundary, point);

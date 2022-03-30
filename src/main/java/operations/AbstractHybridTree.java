@@ -9,7 +9,7 @@ import java.util.List;
 
 public class AbstractHybridTree implements HybridTree {
 
-    public boolean search(SpaceTree tree, Rectangle boundary, Point point) {
+    public boolean search(RegionTree tree, Rectangle boundary, Point point) {
         List<Rectangle> rectangles = tree.search(boundary);
 
         for (Rectangle rectangle: rectangles) {
@@ -24,7 +24,7 @@ public class AbstractHybridTree implements HybridTree {
         return false;
     }
 
-    public void insert(SpaceTree tree, Rectangle boundary, Point point) {
+    public void insert(RegionTree tree, Rectangle boundary, Point point) {
         List<Rectangle> rectangles = search(tree, boundary);
 
         if (!rectangles.isEmpty()) {
@@ -42,11 +42,11 @@ public class AbstractHybridTree implements HybridTree {
         tree.insert(boundary);
     }
 
-    public List<Rectangle> search(SpaceTree tree, Rectangle rectangle) {
+    public List<Rectangle> search(RegionTree tree, Rectangle rectangle) {
         return tree.search(rectangle);
     }
 
-    public void insert(SpaceTree tree, Rectangle rectangle) {
+    public void insert(RegionTree tree, Rectangle rectangle) {
         tree.insert(rectangle);
     }
 }

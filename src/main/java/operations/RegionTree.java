@@ -4,7 +4,7 @@ import models.Rectangle;
 
 import java.util.List;
 
-public interface SpaceTree extends Tree {
+public interface RegionTree extends Tree {
 
     List<Rectangle> search(Rectangle rectangle);
 

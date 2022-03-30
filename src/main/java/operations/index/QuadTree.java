@@ -2,14 +2,14 @@ package operations.index;
 
 import models.Rectangle;
 import models.quad.BaseRectangle;
-import operations.SpaceTree;
+import operations.RegionTree;
 import util.Geometry;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
-public class QuadTree implements SpaceTree {
+public class QuadTree implements RegionTree {
 
     protected static final int QUADTREE = -1;
     protected static final int NE_CHILD = 0;

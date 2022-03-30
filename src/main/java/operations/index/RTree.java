@@ -3,14 +3,14 @@ package operations.index;
 import models.r.RNode;
 import models.quad.BaseRectangle;
 import models.Rectangle;
-import operations.SpaceTree;
+import operations.RegionTree;
 import util.Geometry;
 
 import java.util.*;
 
 import static util.Geometry.getArea;
 
-public class RTree implements SpaceTree {
+public class RTree implements RegionTree {
 
     private final int maxObjects;
     private final int minObjects;
