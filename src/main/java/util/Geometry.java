@@ -1,6 +1,8 @@
 package util;
 
+import models.Point;
 import models.Rectangle;
+import models.quad.BaseRectangle;
 
 public class Geometry {
 
@@ -29,5 +31,9 @@ public class Geometry {
         double area = 1.0f;
         area *= (rectangle.getW() * rectangle.getY());
         return area;
+    }
+
+    public static Rectangle getRectangle(Point point) {
+        return new BaseRectangle((double) point.getX(), (double) point.getY(), 0.0, 0.0);
     }
 }

@@ -15,9 +15,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.sh0nk</groupId>
-            <artifactId>matplotlib4j</artifactId>
-            <version>0.5.0</version>
+            <groupId>org.knowm.xchart</groupId>
+            <artifactId>xchart</artifactId>
+            <version>3.8.1</version>
         </dependency>
     </dependencies>
     
