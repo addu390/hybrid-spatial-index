@@ -33,7 +33,7 @@ public class Geometry {
         return area;
     }
 
-    public static Rectangle getRectangle(Point point) {
+    public static Rectangle toRectangle(Point point) {
         return new BaseRectangle((double) point.getX(), (double) point.getY(), 0.0, 0.0);
     }
 }
