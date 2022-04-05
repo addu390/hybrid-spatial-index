@@ -68,10 +68,7 @@ public class Time {
         System.out.printf("Searching %s for size %d \n", tree.getClass(), points.size());
         long startTime = System.nanoTime();
         for (Point point: points) {
-            boolean isPresent = tree.search(root, point);
-            if (!isPresent) {
-                System.out.print("Danger!!!!");
-            }
+            tree.search(root, point);
         }
         long endTime = System.nanoTime();
         return (endTime - startTime);

@@ -23,7 +23,65 @@ public class TimeIt {
     static int max = 100000;
 
     public static void main(String[] args) throws IOException {
-        chartOne();
+        chartTwo();
+    }
+
+    private static void chartTwo() throws IOException {
+        final XYChart constructionChart = new XYChartBuilder().width(600).height(400)
+                .title("Construct and Insert Time").xAxisTitle("Density of points")
+                .yAxisTitle("Time in Milli Seconds").build();
+
+        constructionChart.getStyler().setLegendPosition(Styler.LegendPosition.InsideNE);
+        constructionChart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Line);
+
+        final XYChart searchChart = new XYChartBuilder().width(600).height(400)
+                .title("Search Time").xAxisTitle("Density of points")
+                .yAxisTitle("Time in Milli Seconds").build();
+
+        searchChart.getStyler().setLegendPosition(Styler.LegendPosition.InsideNE);
+        searchChart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Line);
+
+        double[] densityList = new double[] {0, 2, 4, 6, 8, 10};
+
+        List<Double> quadInserts = new ArrayList<>();
+        List<Double> rInserts = new ArrayList<>();
+        List<Double> kdTimes = new ArrayList<>();
+
+        List<Double> quadSearches = new ArrayList<>();
+        List<Double> rSearches = new ArrayList<>();
+        List<Double> kdSearches = new ArrayList<>();
+
+        for (Double density: densityList) {
+            List<Point> points = Generator.points(min, max, 25000, density.intValue());
+
+            QuadTree quadTree = new QuadTree();
+            RTree rTree = new RTree();
+            KDTree kdTree = new KDTree();
+
+            KDNode rootNode = new KDNode(points.get(0));
+
+            quadInserts.add(constructionTime(quadTree, points)/1000000.0);
+            rInserts.add(constructionTime(rTree, points)/1000000.0);
+            kdTimes.add(constructionTime(kdTree, rootNode, points)/1000000.0);
+
+            Collections.shuffle(points);
+
+            quadSearches.add(searchTime(quadTree, points)/1000000.0);
+            rSearches.add(searchTime(rTree, points)/1000000.0);
+            kdSearches.add(searchTime(kdTree, rootNode, points)/1000000.0);
+        }
+
+        constructionChart.addSeries("Quad Tree", densityList, quadInserts.stream().mapToDouble(Double::doubleValue).toArray());
+        constructionChart.addSeries("R Tree", densityList, rInserts.stream().mapToDouble(Double::doubleValue).toArray());
+        constructionChart.addSeries("KD Tree", densityList, kdTimes.stream().mapToDouble(Double::doubleValue).toArray());
+
+        BitmapEncoder.saveBitmap(constructionChart, "images/results/tree-construction-density", BitmapEncoder.BitmapFormat.PNG);
+
+        searchChart.addSeries("Quad Tree", densityList, quadSearches.stream().mapToDouble(Double::doubleValue).toArray());
+        searchChart.addSeries("R Tree", densityList, rSearches.stream().mapToDouble(Double::doubleValue).toArray());
+        searchChart.addSeries("KD Tree", densityList, kdSearches.stream().mapToDouble(Double::doubleValue).toArray());
+
+        BitmapEncoder.saveBitmap(searchChart, "images/results/tree-access-density", BitmapEncoder.BitmapFormat.PNG);
     }
     
     private static void chartOne() throws IOException {

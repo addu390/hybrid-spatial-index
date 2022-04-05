@@ -17,8 +17,8 @@ public class QuadTree implements RegionTree {
     protected static final int SW_CHILD = 2;
     protected static final int SE_CHILD = 3;
 
-    private int maxObjects = 10;
-    private int maxLevels = 5;
+    private int maxObjects = 100;
+    private int maxLevels = 50;
 
     private static final int DEFAULT_WIDTH = 100;
     private static final int DEFAULT_HEIGHT = 100;

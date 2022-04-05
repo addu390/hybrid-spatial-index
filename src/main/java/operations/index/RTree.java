@@ -23,7 +23,7 @@ public class RTree implements RegionTree {
     }
 
     public RTree() {
-        this(50, 2);
+        this(100, 10);
     }
 
     @Override
