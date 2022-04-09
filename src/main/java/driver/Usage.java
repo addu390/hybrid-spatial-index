@@ -40,11 +40,11 @@ public class Usage {
         List<Point> points = Generator.points(10, 200, 100, 10);
         Rectangle boundary = new BaseRectangle(10.0, 10.0, 200.0, 200.0);
 
-        long c1 = constructionTime(hQuadKDTree, hQuadTree, rectangles, points, boundary);
-        long c2 = constructionTime(hRKDTree, hRTree, rectangles, points, boundary);
+        double c1 = constructionTime(hQuadKDTree, hQuadTree, rectangles, points, boundary);
+        double c2 = constructionTime(hRKDTree, hRTree, rectangles, points, boundary);
 
-        long s1 = searchTime(hQuadKDTree, hQuadTree, points, boundary);
-        long s2 = searchTime(hRKDTree, hRTree, points, boundary);
+        double s1 = searchTime(hQuadKDTree, hQuadTree, points, boundary);
+        double s2 = searchTime(hRKDTree, hRTree, points, boundary);
 
         System.out.printf(format, "Quad-KD", s1, c1);
         System.out.printf(format, "R-KD", s2, c2);
